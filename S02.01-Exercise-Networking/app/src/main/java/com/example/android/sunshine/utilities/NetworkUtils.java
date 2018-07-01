@@ -15,9 +15,15 @@
  */
 package com.example.android.sunshine.utilities;
 
+import android.net.Uri;
+import android.util.Log;
+
+import com.example.android.sunshine.data.SunshinePreferences;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
@@ -34,6 +40,9 @@ public final class NetworkUtils {
     private static final String STATIC_WEATHER_URL =
             "https://andfun-weather.udacity.com/staticweather";
 
+    private static final String OPEN_WEATHER_URL =
+            "https://api.openweathermap.org/data/2.5/forecast";
+
     private static final String FORECAST_BASE_URL = STATIC_WEATHER_URL;
 
     /*
@@ -49,6 +58,7 @@ public final class NetworkUtils {
     private static final String units = "metric";
     /* The number of days we want our API to return */
     private static final int numDays = 14;
+    final static String QUERY_TYPE = "daily";
 
     final static String QUERY_PARAM = "q";
     final static String LAT_PARAM = "lat";
@@ -56,6 +66,8 @@ public final class NetworkUtils {
     final static String FORMAT_PARAM = "mode";
     final static String UNITS_PARAM = "units";
     final static String DAYS_PARAM = "cnt";
+    final static String CADENUS_PARAM = "APPID";
+    final static String CADENUS = "<!--Entervalidapikey-->";
 
     /**
      * Builds the URL used to talk to the weather server using a location. This location is based
@@ -65,8 +77,23 @@ public final class NetworkUtils {
      * @return The URL to use to query the weather server.
      */
     public static URL buildUrl(String locationQuery) {
-        // TODO (1) Fix this method to return the URL used to query Open Weather Map's API
-        return null;
+        Uri uri = Uri.parse(OPEN_WEATHER_URL).buildUpon()
+                .appendPath(QUERY_TYPE)
+                .appendQueryParameter(QUERY_PARAM, locationQuery)
+                .appendQueryParameter(FORMAT_PARAM, format)
+                .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                .appendQueryParameter(CADENUS_PARAM,CADENUS)
+                .build();
+
+        URL resultUrl = null;
+        try {
+            resultUrl = new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            Log.e("NetworkUtils", "An error occurred creating the URL from ["+uri.toString()+"].", e);
+        }
+
+        // COMPLETED (1) Fix this method to return the URL used to query Open Weather Map's API
+        return resultUrl;
     }
 
     /**
